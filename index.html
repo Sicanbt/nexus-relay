@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS RELAY — Decentralized AI Inference Routing</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0f; color: #e0e0ff; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; }
+  .hero { text-align: center; padding: 80px 20px 40px; position: relative; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 70%); pointer-events: none; }
+  .badge { display: inline-block; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.4); color: #818cf8; padding: 6px 16px; border-radius: 20px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+  h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -2px; background: linear-gradient(135deg, #818cf8, #38bdf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+  .tagline { font-size: 1.2rem; color: #94a3b8; max-width: 600px; margin: 0 auto 48px; line-height: 1.6; }
+  .stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin-bottom: 80px; }
+  .stat { text-align: center; }
+  .stat-value { font-size: 2rem; font-weight: 700; color: #818cf8; }
+  .stat-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .agents { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+  .agent-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; transition: all 0.3s; position: relative; overflow: hidden; }
+  .agent-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; border-radius: 16px; }
+  .agent-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); }
+  .agent-card:hover::before { opacity: 1; }
+  .card-router::before { background: radial-gradient(ellipse at top left, rgba(59,130,246,0.1), transparent 60%); }
+  .card-optimizer::before { background: radial-gradient(ellipse at top left, rgba(52,211,153,0.1), transparent 60%); }
+  .card-validator::before { background: radial-gradient(ellipse at top left, rgba(251,146,60,0.1), transparent 60%); }
+  .card-relay::before { background: radial-gradient(ellipse at top left, rgba(167,139,250,0.1), transparent 60%); }
+  .agent-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+  .icon-router { background: rgba(59,130,246,0.15); }
+  .icon-optimizer { background: rgba(52,211,153,0.15); }
+  .icon-validator { background: rgba(251,146,60,0.15); }
+  .icon-relay { background: rgba(167,139,250,0.15); }
+  .agent-name { font-size: 1rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .name-router { color: #60a5fa; }
+  .name-optimizer { color: #34d399; }
+  .name-validator { color: #fb923c; }
+  .name-relay { color: #a78bfa; }
+  .agent-desc { font-size: 0.875rem; color: #94a3b8; line-height: 1.6; margin-bottom: 16px; }
+  .agent-tech { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tech-tag { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #64748b; padding: 3px 10px; border-radius: 6px; font-size: 0.75rem; }
+  .mimo-section { text-align: center; padding: 60px 24px; background: rgba(99,102,241,0.05); border-top: 1px solid rgba(99,102,241,0.1); border-bottom: 1px solid rgba(99,102,241,0.1); margin-bottom: 60px; }
+  .mimo-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; }
+  .mimo-badge span { color: #818cf8; font-weight: 600; }
+  .mimo-section h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; }
+  .mimo-section p { color: #94a3b8; max-width: 600px; margin: 0 auto; line-height: 1.7; }
+  .flow { max-width: 900px; margin: 0 auto 80px; padding: 0 24px; }
+  .flow h2 { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 40px; color: #e2e8f0; }
+  .flow-steps { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; }
+  .flow-step { text-align: center; padding: 20px; flex: 1; min-width: 140px; }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.4); color: #818cf8; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .step-label { font-size: 0.8rem; color: #94a3b8; }
+  .flow-arrow { color: #334155; font-size: 1.5rem; flex-shrink: 0; }
+  .footer { text-align: center; padding: 40px; color: #334155; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.05); }
+  .pulse { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .float { animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge pulse">Powered by MiMo V2.5</div>
+  <h1>NEXUS RELAY</h1>
+  <p class="tagline">Decentralized AI inference routing network. Route any LLM request to the optimal provider in real-time — lowest latency, highest throughput, zero single point of failure.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-value">2.1ms</div><div class="stat-label">Avg Routing Latency</div></div>
+    <div class="stat"><div class="stat-value">99.97%</div><div class="stat-label">Uptime SLA</div></div>
+    <div class="stat"><div class="stat-value">60+</div><div class="stat-label">LLM Providers</div></div>
+    <div class="stat"><div class="stat-value">$47K</div><div class="stat-label">MRR</div></div>
+  </div>
+</div>
+
+<div class="agents">
+  <div class="agent-card card-router float">
+    <div class="agent-icon icon-router">🔀</div>
+    <div class="agent-name name-router">Router</div>
+    <p class="agent-desc">MiMo V2.5-powered intelligent request router. Analyzes task complexity, token budget, and latency requirements to select the optimal LLM provider in under 2ms.</p>
+    <div class="agent-tech">
+      <span class="tech-tag">MiMo V2.5</span>
+      <span class="tech-tag">gRPC</span>
+      <span class="tech-tag">Redis</span>
+    </div>
+  </div>
+  <div class="agent-card card-optimizer">
+    <div class="agent-icon icon-optimizer">⚡</div>
+    <div class="agent-name name-optimizer">Optimizer</div>
+    <p class="agent-desc">Continuous cost-performance optimizer. Monitors provider pricing, response quality, and throughput in real-time. Rebalances traffic allocation every 30 seconds.</p>
+    <div class="agent-tech">
+      <span class="tech-tag">Reinforcement Learning</span>
+      <span class="tech-tag">Prometheus</span>
+    </div>
+  </div>
+  <div class="agent-card card-validator">
+    <div class="agent-icon icon-validator">🛡️</div>
+    <div class="agent-name name-validator">Validator</div>
+    <p class="agent-desc">Response quality validator using MiMo V2.5 chain-of-thought scoring. Detects hallucinations, incomplete responses, and policy violations before delivery.</p>
+    <div class="agent-tech">
+      <span class="tech-tag">MiMo V2.5</span>
+      <span class="tech-tag">RLHF scoring</span>
+    </div>
+  </div>
+  <div class="agent-card card-relay">
+    <div class="agent-icon icon-relay">🌐</div>
+    <div class="agent-name name-relay">Relay</div>
+    <p class="agent-desc">Global edge relay network with 12 PoPs across Asia, Europe, and Americas. Streams tokens with sub-50ms TTFT from any region. Handles 50K concurrent connections.</p>
+    <div class="agent-tech">
+      <span class="tech-tag">WebSocket</span>
+      <span class="tech-tag">SSE</span>
+      <span class="tech-tag">Cloudflare</span>
+    </div>
+  </div>
+</div>
+
+<div class="mimo-section">
+  <div class="mimo-badge">
+    <span>🧠 MiMo V2.5 Core Intelligence</span>
+  </div>
+  <h2>Built on MiMo V2.5 Reasoning</h2>
+  <p>NEXUS RELAY uses MiMo V2.5's long chain-of-thought reasoning to make routing decisions that go beyond simple latency metrics — understanding task semantics, provider strengths, and cost-quality tradeoffs in real-time.</p>
+</div>
+
+<div class="flow">
+  <h2>Request Flow</h2>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="step-num">1</div><div class="step-label">Inbound Request</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="step-num">2</div><div class="step-label">Router Analysis</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="step-num">3</div><div class="step-label">Provider Selection</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="step-num">4</div><div class="step-label">Validator Check</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="step-num">5</div><div class="step-label">Relay Delivery</div></div>
+  </div>
+</div>
+
+<div class="footer">
+  NEXUS RELAY &copy; 2026 — Decentralized AI Inference Routing Network
+</div>
+
+</body>
+</html>
